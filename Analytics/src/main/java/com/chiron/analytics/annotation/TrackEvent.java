@@ -6,7 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Trace {
-    String method();
+@Target({ElementType.METHOD})
+public @interface TrackEvent {
+    String eventName() default "";
+
+    String category() default "";
+
+    String result() default "";
 }

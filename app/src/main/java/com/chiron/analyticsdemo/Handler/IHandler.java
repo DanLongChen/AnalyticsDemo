@@ -2,15 +2,16 @@ package com.chiron.analyticsdemo.Handler;
 
 import android.view.View;
 
-import com.chiron.analytics.annotation.Trace;
+import com.chiron.analytics.annotation.TrackElements;
 
 public interface IHandler {
-    @Trace(method = "onclick")
     void click(View view);
 
     void sayHello();
 
-    int calculate();
+    void play();
+
+    int calculate(int times,int startValue);
 
     String getHandlerName();
 }

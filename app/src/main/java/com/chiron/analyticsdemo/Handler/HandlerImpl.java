@@ -3,7 +3,9 @@ package com.chiron.analyticsdemo.Handler;
 import android.util.Log;
 import android.view.View;
 
-import com.chiron.analytics.annotation.Trace;
+import com.chiron.analytics.annotation.TrackElements;
+import com.chiron.analytics.annotation.TrackEvent;
+import com.chiron.analytics.annotation.TrackReturn;
 
 public class HandlerImpl implements IHandler{
     private static final String TAG = HandlerImpl.class.getSimpleName();
@@ -17,22 +19,29 @@ public class HandlerImpl implements IHandler{
         return LazyHolder.INSTANCE;
     }
 
-    @Trace(method = "onclick")
     @Override
     public void click(View view) {
-        Log.d(TAG,"doClick");
+
     }
 
+    @TrackEvent(eventName = "sayHello",category = "track")
     @Override
     public void sayHello() {
-        Log.d(TAG,"doSayHello");
+
     }
 
+    @TrackEvent(eventName = "play",category = "track")
     @Override
-    public int calculate() {
-        int sum=0;
-        for(int i=0;i<100;i++){
-            sum+=i;
+    public void play() {
+
+    }
+
+    @TrackEvent(eventName = "calculate",category = "track",result = "calculateResult")
+    @Override
+    public int calculate(@TrackElements(value = "times") int times,@TrackElements(value = "startValue") int startValue) {
+        int sum = startValue;
+        for (int i = 0; i < times; i++) {
+            sum += i;
         }
         return sum;
     }

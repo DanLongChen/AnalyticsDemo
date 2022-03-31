@@ -3,9 +3,9 @@ package com.chiron.analyticsdemo;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
-import com.chiron.analytics.annotation.Trace;
 import com.chiron.analyticsdemo.Handler.HandlerImpl;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void doCalculate(){
-        HandlerImpl.getInstance().calculate();
+        Log.d("getCalculatevalue:",String.valueOf(HandlerImpl.getInstance().calculate(10,9)));
     }
 
     private void doSayHello(){

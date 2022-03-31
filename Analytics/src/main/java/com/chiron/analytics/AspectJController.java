@@ -3,72 +3,117 @@ package com.chiron.analytics;
 import android.util.Log;
 import android.view.View;
 
+import com.chiron.analytics.annotation.TrackElements;
+import com.chiron.analytics.annotation.TrackEvent;
+import com.chiron.analytics.annotation.TrackReturn;
+
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 @Aspect
 public class AspectJController {
-    private static final String POINTCUT_METHOD =
-            "execution(@com.chiron.analytics.annotation.Trace * *(..))";
-    private static final String TEXT_METHOD = "* com.chiron.analyticsdemo.Handler.HandlerImpl.click(..)";
+    /**
+     * 定义切入点，使用注解的方式定位
+     */
+    private static final String ANNOTATION_METHOD = "execution(@com.chiron.analytics.annotation.TrackEvent * *(..)";
+    private static final String ANNOTATION_METHOD1 = "execution(* *(..)) && @annotation(com.chiron.analytics.annotation.TrackEvent)";
+    /**
+     * 使用匹配方式定位
+     */
+    private static final String CLICK_METHOD = "execution(* com.chiron.analyticsdemo.Handler.HandlerImpl.click(..))";
 
-    @Pointcut(POINTCUT_METHOD)
-    public void annoHaviorTrace() {
-        Log.e("Daniel", "annoHaviorTrace");
+    private static final String SAY_HELLO_METHOD = "execution(* *.sayHello(..))";
+
+    private static final String CALCULATE_METHOD = "execution(* *..*.calculate(..))";
+
+    private static final String RETURN_VALUE = "call(* *..*.getHandlerName())";
+
+    /**
+     * 定义切点
+     */
+    @Pointcut(ANNOTATION_METHOD1)
+    public void annotationTrack() {
+
     }
 
-    @Around("annoHaviorTrace()")
-    public Object weaveJoinPoint(final ProceedingJoinPoint joinPoint){
-        Log.e("Daniel","weaveJoinPoint");
+    @Pointcut(CLICK_METHOD)
+    public void clickMethod(){
+
+    }
+
+    @Before(value = CLICK_METHOD)
+    public void weaveBeforeJoinPoint(final ProceedingJoinPoint joinPoint){
+        Log.d("Daniel","weaveBeforeJoinPoint");
+    }
+
+    @After(value = SAY_HELLO_METHOD)
+    public void weaveAfterJoinPoint(final ProceedingJoinPoint joinPoint){
+        Log.d("Daniel","weaveAfterJoinPoint");
+    }
+
+    @AfterReturning(pointcut = RETURN_VALUE, returning = "handlerName")
+    public void trackReturnValue(String handlerName) {
+        Log.d("Daniel", "trackReturnValue: " + handlerName);
+    }
+
+    @AfterReturning(pointcut = "annotationTrack()",returning = "returnValue")
+    public void weaveJoinPoint(final JoinPoint joinPoint,final Object returnValue){
         try {
-            joinPoint.proceed();
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-        return null;
-    }
-
-    @Pointcut("execution(void com.chiron.analyticsdemo.Handler.HandlerImpl.doClick(..))")
-    public void doClick(final ProceedingJoinPoint joinPoint){
-
-    }
-
-    @Around("execution(void com.chiron.analyticsdemo.Handler.IHandler.doClick(..))")
-    public void onAroundClick(final ProceedingJoinPoint joinPoint){
-        Log.d("Daniel","onAroundClick");
-        Object target = joinPoint.getTarget();
-        String className = "";
-        if(target!=null){
-            className = target.getClass().getName();
-            if (className.contains("$")) {
-                className = className.split("\\$")[0];
-            }
-            if (className.contains("_ViewBinding")) {
-                className = className.split("_ViewBinding")[0];
-            }
-        }
-        Object[] args = joinPoint.getArgs();
-        if(args.length>=1 && args[0] instanceof View){
-            View view = (View)args[0];
-            int id = view.getId();
-            if(id<0){
-                doTrace(className,"");
-            }else{
-                String entryName = view.getResources().getResourceEntryName(id);
-                doTrace(className,entryName);
-            }
-        }
-        try {
-            joinPoint.proceed();//执行原来的方法
+            performJoinPoint(joinPoint,returnValue);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
     }
 
-    public void doTrace(String key,String value){
-        Log.d(key,value);
+    public void performJoinPoint(final JoinPoint joinPoint, final Object returnValue) {
+        if (joinPoint == null) {
+            return;
+        }
+        Map<String,String> extra = new HashMap<>(3);
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        TrackEvent trackEvent = methodSignature.getMethod().getAnnotation(TrackEvent.class);
+        String eventName = trackEvent.eventName();
+        String category = trackEvent.category();
+        String result = trackEvent.result();
+
+        if (!"".equals(result) && returnValue != null) {
+            extra.put(result, returnValue.toString());
+        }
+
+        Annotation[][] parameterAnnotations = methodSignature.getMethod().getParameterAnnotations();
+
+        if(parameterAnnotations!=null && parameterAnnotations.length>0){
+            int i=0;
+            for(Annotation[] parameterAnnotation:parameterAnnotations){
+                for (Annotation annotation : parameterAnnotation) {
+                    if(annotation instanceof TrackElements){
+                        String key = ((TrackElements) annotation).value();
+                        String value = String.valueOf(joinPoint.getArgs()[i++]);
+                        extra.put(key, value);
+                    }
+                }
+            }
+        }
+        doTrack(eventName,category,extra);
+    }
+
+    /**
+     * 这里模拟埋点本地缓存和网络上报接入
+     */
+    public void doTrack(String eventName, String category, Map<String, String> extra) {
+        Log.e("doTrack", eventName + "  " + category + "  " + extra);
     }
 }
