@@ -1,3 +1,4 @@
 rootProject.name = "AnalyticsDemo"
 include ':app'
 include ':Analytics'
+include ':MyAspcetjPlugin'

@@ -1,0 +1,38 @@
+plugins {
+    id 'groovy'
+}
+
+dependencies {
+    implementation gradleApi()//gradle sdk
+    implementation localGroovy()//groovy sdk
+    implementation 'org.aspectj:aspectjtools:1.9.6'
+}
+
+// 用于发布该插件，其他工程可通过配置引用
+apply plugin: 'maven-publish'
+repositories {
+    google()
+    jcenter()
+    mavenCentral()
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.java
+                groupId = 'com.chiron.plugin'
+                artifactId = 'MyAspectJPlugin'
+                version = '1.0.0'
+            }
+        }
+
+        repositories {
+            maven {
+                allowInsecureProtocol true
+                // 指定发布的位置为当前工程的repo目录下
+                url = uri('../repo')
+            }
+        }
+    }
+}

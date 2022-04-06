@@ -1,0 +1,70 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.chiron.plugin",
+    "module": "MyAspectJPlugin",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.7.1",
+      "buildId": "5rf3ouck6zcwraz3pv6jbeqmmq"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "MyAspectJPlugin-1.0.0.jar",
+          "url": "MyAspectJPlugin-1.0.0.jar",
+          "size": 261,
+          "sha512": "20c0ff4847806d1df5a700a03b6bd3a7c9216d217cdfe7fec44c1e6d8e732a94e82656f2b30ccd8a23618192bd88cca10fbfa39f287f015a438480edb9cc2632",
+          "sha256": "7172d5a450c816337c2814f316f1c6d87fa75a6a31f46cf72fb6dbe96a6eb4c3",
+          "sha1": "b52934eb0bf69665b620addab7635a3d68e16db4",
+          "md5": "a25f6986cef1080ec3e9785c95254741"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.aspectj",
+          "module": "aspectjtools",
+          "version": {
+            "requires": "1.9.6"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "MyAspectJPlugin-1.0.0.jar",
+          "url": "MyAspectJPlugin-1.0.0.jar",
+          "size": 261,
+          "sha512": "20c0ff4847806d1df5a700a03b6bd3a7c9216d217cdfe7fec44c1e6d8e732a94e82656f2b30ccd8a23618192bd88cca10fbfa39f287f015a438480edb9cc2632",
+          "sha256": "7172d5a450c816337c2814f316f1c6d87fa75a6a31f46cf72fb6dbe96a6eb4c3",
+          "sha1": "b52934eb0bf69665b620addab7635a3d68e16db4",
+          "md5": "a25f6986cef1080ec3e9785c95254741"
+        }
+      ]
+    }
+  ]
+}

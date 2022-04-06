@@ -10,6 +10,9 @@ buildscript {
         classpath 'org.aspectj:aspectjweaver:1.9.6'
     }
 }
+
+apply plugin:'com.chiron.plugin.MyAspectJPlugin'
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
